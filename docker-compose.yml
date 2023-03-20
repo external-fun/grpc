@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  client:
+    environment:
+      - SQL_PATH=/app/shop.db
+      - GRPC_CONNECTION=server:7070
+    build: ./client
+    depends_on:
+      - server
+    volumes:
+      - ./cert/:/cert/
+    deploy:
+      replicas: 1
+  server:
+    environment:
+      - DB_PASSWORD=(lispberry)
+      - DB_USER=lispberry
+      - DB_HOST=db
+    build: ./server
+    depends_on:
+      - db
+    volumes:
+      - ./cert/:/cert/
+    deploy:
+      replicas: 1
+    ports:
+      - "8080:8080"
+      - "7070:7070"
+  db:
+    deploy:
+      replicas: 1
+    environment:
+      - POSTGRES_PASSWORD=(lispberry)
+      - POSTGRES_USER=lispberry
+    build: ./db
